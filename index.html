@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GPS Track Viewer</title>
+  <style>
+    html, body, #map {
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script>
+    async function initMap() {
+      const response = await fetch('full_data.json');
+      const data = await response.json();
+
+      const path = data.map(point => ({
+        latitude: point.lat,
+        longitude: point.lng
+      }));
+
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 15,
+        center: path[0], // Start position
+        mapTypeId: 'terrain'
+      });
+
+      new google.maps.Polyline({
+        path: path,
+        geodesic: true,
+        strokeColor: "#FF0000",
+        strokeOpacity: 1.0,
+        strokeWeight: 3,
+        map: map
+      });
+
+      new google.maps.Marker({
+        position: path[0],
+        map: map,
+        label: "Start"
+      });
+
+      new google.maps.Marker({
+        position: path[path.length - 1],
+        map: map,
+        label: "End"
+      });
+    }
+  </script>
+
+  <script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB66kyfNi_Euch5zv4wn3KY1YPpmMRIBNo&callback=initMap">
+  </script>
+</body>
+</html>
