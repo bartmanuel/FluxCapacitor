@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>GPS Track Viewer</title>
+  <title>Track Viewer</title>
+  <meta charset="utf-8" />
   <style>
     html, body, #map {
       height: 100%;
       margin: 0;
+      padding: 0;
     }
   </style>
 </head>
@@ -18,42 +19,47 @@
       const response = await fetch('full_data.json');
       const data = await response.json();
 
-      const path = data.map(point => ({
-        lat: point.latitude,
-        lnt: point.longitude
+      if (!data.length) return;
+
+      const coordinates = data.map(p => ({
+        lat: p.latitude,
+        lng: p.longitude
       }));
 
       const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 15,
-        center: path[0], // Start position
-        mapTypeId: 'terrain'
+        zoom: 17,
+        center: coordinates[0],
+        mapTypeId: "roadmap"
       });
 
-      new google.maps.Polyline({
-        path: path,
+      const path = new google.maps.Polyline({
+        path: coordinates,
         geodesic: true,
         strokeColor: "#FF0000",
         strokeOpacity: 1.0,
-        strokeWeight: 3,
-        map: map
+        strokeWeight: 2
       });
 
+      path.setMap(map);
+
+      // Optional: mark start and end
       new google.maps.Marker({
-        position: path[0],
-        map: map,
+        position: coordinates[0],
+        map,
         label: "Start"
       });
 
       new google.maps.Marker({
-        position: path[path.length - 1],
-        map: map,
+        position: coordinates[coordinates.length - 1],
+        map,
         label: "End"
       });
     }
   </script>
 
-  <script async
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB66kyfNi_Euch5zv4wn3KY1YPpmMRIBNo&callback=initMap">
-  </script>
+<script async
+src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB66kyfNi_Euch5zv4wn3KY1YPpmMRIBNo&callback=initMap">
+</script>
+
 </body>
 </html>
