@@ -19,8 +19,8 @@
       const data = await response.json();
 
       const path = data.map(point => ({
-        latitude: point.lat,
-        longitude: point.lng
+        lat: point.latitude,
+        lnt: point.longitude
       }));
 
       const map = new google.maps.Map(document.getElementById("map"), {
