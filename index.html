@@ -13,9 +13,31 @@
 </head>
 <body>
   <div id="map"></div>
+  <div id="debug" hidden="true"></div>
 
   <script>
-    async function initMap() {
+    function getTrackCenter(track) {
+      if (!track.length) return { lat: 0, lng: 0 };
+
+      let minLat = track[0].lat;
+      let maxLat = track[0].lat;
+      let minLon = track[0].lng;
+      let maxLon = track[0].lng;
+
+      for (const point of track) {
+        if (point.lat < minLat) minLat = point.lat;
+        if (point.lat > maxLat) maxLat = point.lat;
+        if (point.lng < minLon) minLon = point.lng;
+        if (point.lng > maxLon) maxLon = point.lng;
+      }
+
+      return {
+        lat: (minLat + maxLat) / 2,
+        lng: (minLon + maxLon) / 2
+      };
+   }   
+
+   async function initMap() {
       const response = await fetch('full_data.json');
       const data = await response.json();
 
@@ -25,11 +47,14 @@
         lat: p.latitude,
         lng: p.longitude
       }));
+      center = getTrackCenter(coordinates);
+
+      // document.getElementById("debug").innerHTML = coordinates[0].lat
 
       const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 17,
-        center: coordinates[0],
-        mapTypeId: "roadmap"
+        zoom: 6,
+        center: center,
+        mapTypeId: "hybrid"
       });
 
       const path = new google.maps.Polyline({
