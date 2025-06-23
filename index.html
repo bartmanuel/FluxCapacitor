@@ -59,7 +59,7 @@
       });
 
       const path = new google.maps.Polyline({
-        path: data,
+        path: coordinates,
         geodesic: true,
         strokeColor: "#FF0000",
         strokeOpacity: 1.0,
@@ -70,13 +70,13 @@
 
       // Optional: mark start and end
       new google.maps.Marker({
-        position: data[0],
+        position: coordinates[0],
         map,
         label: "Start"
       });
 
       new google.maps.Marker({
-        position: data[coordinates.length - 1],
+        position: coordinates[coordinates.length - 1],
         map,
         label: "End"
       });
