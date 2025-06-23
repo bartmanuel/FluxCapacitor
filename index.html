@@ -21,35 +21,36 @@
 
       let minLat = track[0].lat;
       let maxLat = track[0].lat;
-      let minLon = track[0].lng;
-      let maxLon = track[0].lng;
+      let minLng = track[0].lng;
+      let maxLng = track[0].lng;
 
       for (const point of track) {
         if (point.lat < minLat) minLat = point.lat;
         if (point.lat > maxLat) maxLat = point.lat;
-        if (point.lng < minLon) minLon = point.lng;
-        if (point.lng > maxLon) maxLon = point.lng;
+        if (point.lng < minLng) minLng = point.lng;
+        if (point.lng > maxLng) maxLng = point.lng;
       }
 
       return {
         lat: (minLat + maxLat) / 2,
-        lng: (minLon + maxLon) / 2
+        lng: (minLng + maxLng) / 2
       };
    }   
 
    async function initMap() {
-      const response = await fetch('full_data.json');
+      const response = await fetch('FluxTrack.json');
       const data = await response.json();
 
       if (!data.length) return;
 
+      // Check if this conversion is needed
       const coordinates = data.map(p => ({
-        lat: p.latitude,
-        lng: p.longitude
+        lat: p.lat,
+        lng: p.lng
       }));
-      center = getTrackCenter(coordinates);
 
-      // document.getElementById("debug").innerHTML = coordinates[0].lat
+
+      center = getTrackCenter(coordinates);
 
       const map = new google.maps.Map(document.getElementById("map"), {
         zoom: 6,
@@ -58,7 +59,7 @@
       });
 
       const path = new google.maps.Polyline({
-        path: coordinates,
+        path: data,
         geodesic: true,
         strokeColor: "#FF0000",
         strokeOpacity: 1.0,
@@ -69,13 +70,13 @@
 
       // Optional: mark start and end
       new google.maps.Marker({
-        position: coordinates[0],
+        position: data[0],
         map,
         label: "Start"
       });
 
       new google.maps.Marker({
-        position: coordinates[coordinates.length - 1],
+        position: data[coordinates.length - 1],
         map,
         label: "End"
       });
