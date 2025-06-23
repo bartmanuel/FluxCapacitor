@@ -39,18 +39,18 @@
 
    async function initMap() {
       const response = await fetch('FluxTrack.json');
-      const data = await response.json();
+      const track = await response.json();
 
-      if (!data.length) return;
+      if (!track.length) return;
 
       // Check if this conversion is needed
-      const coordinates = data.map(p => ({
-        lat: p.lat,
-        lng: p.lng
-      }));
+    //  const coordinates = data.map(p => ({
+    //    lat: p.lat,
+    //    lng: p.lng
+    //  }));
 
 
-      center = getTrackCenter(coordinates);
+      center = getTrackCenter(track);
 
       const map = new google.maps.Map(document.getElementById("map"), {
         zoom: 6,
@@ -59,7 +59,7 @@
       });
 
       const path = new google.maps.Polyline({
-        path: coordinates,
+        path: track,
         geodesic: true,
         strokeColor: "#FF0000",
         strokeOpacity: 1.0,
@@ -70,13 +70,13 @@
 
       // Optional: mark start and end
       new google.maps.Marker({
-        position: coordinates[0],
+        position: track[0],
         map,
         label: "Start"
       });
 
       new google.maps.Marker({
-        position: coordinates[coordinates.length - 1],
+        position: track[track.length - 1],
         map,
         label: "End"
       });
