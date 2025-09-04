@@ -38,7 +38,7 @@
    }   
 
    async function initMap() {
-      const response = await fetch('FluxTrack.json');
+      const response = await fetch('FluxTrack.json?sdadsjkasdnk');
       const track = await response.json();
 
       if (!track.length) return;

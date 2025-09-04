@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>LatLon Bounding Box with Grid + Mouse Coordinates</title>
+    <style>
+      #map {
+        height: 90vh;
+        width: 100%;
+      }
+      body {
+        font-family: sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      #controls {
+        padding: 10px;
+        background: #f0f0f0;
+      }
+      #coords {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 5px 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        z-index: 999;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="controls">
+      <label>Bounding Box (lat1,lon1,lat2,lon2):</label>
+      <input id="bbox" type="text" value="52.0,4.0,52.2,4.3" size="30">
+      <button onclick="drawBox()">Submit</button>
+    </div>
+    <div id="map"></div>
+    <div id="coords">Lat: –, Lng: –</div>
+
+    <script>
+      let map;
+      let rectangle = null;
+      let gridLines = [];
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 52.1, lng: 4.15 },
+          zoom: 10,
+        });
+
+        // Mouse move listener for coordinate display
+        map.addListener("mousemove", (event) => {
+          const lat = event.latLng.lat().toFixed(5);
+          const lng = event.latLng.lng().toFixed(5);
+          document.getElementById("coords").innerText = `Lat: ${lat}, Lng: ${lng}`;
+        });
+      }
+
+      function drawBox() {
+        if (rectangle) rectangle.setMap(null);
+        gridLines.forEach(line => line.setMap(null));
+        gridLines = [];
+
+        const input = document.getElementById("bbox").value;
+        const [lat1, lon1, lat2, lon2] = input.split(',').map(Number);
+
+        const bounds = {
+          north: Math.max(lat1, lat2),
+          south: Math.min(lat1, lat2),
+          east: Math.max(lon1, lon2),
+          west: Math.min(lon1, lon2)
+        };
+
+        rectangle = new google.maps.Rectangle({
+          bounds: bounds,
+          strokeColor: "#FF0000",
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: "#FF0000",
+          fillOpacity: 0.2,
+          map: map,
+        });
+
+        map.fitBounds(bounds);
+
+        const latStep = 0.05;
+        const lonStep = 0.05;
+/*
+        for (let lat = Math.ceil(bounds.south / latStep) * latStep; lat < bounds.north; lat += latStep) {
+          const line = new google.maps.Polyline({
+            path: [
+              { lat: lat, lng: bounds.west },
+              { lat: lat, lng: bounds.east }
+            ],
+            strokeColor: "#000000",
+            strokeOpacity: 0.3,
+            strokeWeight: 1,
+            map: map,
+          });
+//          gridLines.push(line);
+        }
+
+        for (let lon = Math.ceil(bounds.west / lonStep) * lonStep; lon < bounds.east; lon += lonStep) {
+          const line = new google.maps.Polyline({
+            path: [
+              { lat: bounds.south, lng: lon },
+              { lat: bounds.north, lng: lon }
+            ],
+            strokeColor: "#000000",
+            strokeOpacity: 0.3,
+            strokeWeight: 1,
+            map: map,
+          });
+//          gridLines.push(line);
+        }
+*/
+    }
+    </script>
+
+  <script async
+     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB66kyfNi_Euch5zv4wn3KY1YPpmMRIBNo&callback=initMap">
+  </script>
+</body>
+</html>
